@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { BingoTask } from '../game'
 import { clearActiveCard, loadActiveCard, saveActiveCard, type ActiveCardRecord } from '../persistence/active-card'
-import { mockTaskSource, type TaskSource } from '../data/taskSource'
+import { apiTaskSource, type TaskSource } from '../data/taskSource'
 
 type TaskStatus = 'loading' | 'ready' | 'error'
 type StorageIssue = 'unavailable' | 'corrupted' | null
@@ -17,7 +17,7 @@ interface AppStateValue {
 
 const AppStateContext = createContext<AppStateValue | null>(null)
 
-export function AppStateProvider({ children, taskSource = mockTaskSource }: {
+export function AppStateProvider({ children, taskSource = apiTaskSource }: {
   children: ReactNode
   taskSource?: TaskSource
 }) {

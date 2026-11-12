@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../app/AppState'
 import { makeActiveCard, sameCardIdentity } from '../app/cardRecords'
+import { createSharedCard, sharedCardUrl } from '../api/client'
 import { AppLayout } from '../components/AppLayout'
 import { BingoGrid } from '../components/BingoGrid'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -18,6 +19,8 @@ export function PlayPage() {
   const [announcement, setAnnouncement] = useState('')
   const [confirm, setConfirm] = useState<'replace' | 'reset' | 'open-shared' | null>(null)
   const [shareOpen, setShareOpen] = useState(false)
+  const [shareUrl, setShareUrl] = useState('')
+  const [shareBusy, setShareBusy] = useState(false)
   const [shareMessage, setShareMessage] = useState('')
   const shareInput = useRef<HTMLInputElement>(null)
   const query = params.toString()
@@ -92,11 +95,31 @@ export function PlayPage() {
     return window.location.origin + '/play?' + search.toString()
   }
 
-  async function copyShareUrl() {
-    if (!activeCard || activeCard.kind !== 'random') return
+  async function createCustomShareUrl() {
+    if (!activeCard || activeCard.kind !== 'custom') return
+    setShareBusy(true)
+    setShareMessage('')
     try {
-      await navigator.clipboard.writeText(createShareUrl(activeCard.card))
-      setShareMessage('Link copied. A new player gets a fresh card.')
+      const created = await createSharedCard({
+        gridSize: activeCard.card.gridSize,
+        freeCenter: activeCard.card.freeCenter,
+        cells: activeCard.card.cells.map((cell) => cell.task ? { taskId: cell.task.id } : null),
+      })
+      setShareUrl(sharedCardUrl(created.id))
+    } catch (cause) {
+      setShareMessage(cause instanceof Error ? cause.message : 'Could not create the share link.')
+    } finally {
+      setShareBusy(false)
+    }
+  }
+
+  async function copyShareUrl() {
+    if (!activeCard) return
+    const url = activeCard.kind === 'random' ? createShareUrl(activeCard.card) : shareUrl
+    if (!url) return
+    try {
+      await navigator.clipboard.writeText(url)
+      setShareMessage('Link copied.')
     } catch {
       shareInput.current?.select()
       setShareMessage('Select the link and copy it to share.')
@@ -133,7 +156,7 @@ export function PlayPage() {
     navigate('/random', { state: { replacementConfirmed: true } })
   }
 
-  if (taskStatus === 'loading') {
+  if (taskStatus === 'loading' && !activeCard) {
     return <AppLayout><p role="status" className="loading-card">Getting your card ready…</p></AppLayout>
   }
 
@@ -203,7 +226,7 @@ export function PlayPage() {
     />
 
     <div className="play-controls">
-      <button className="button button-secondary" onClick={() => setShareOpen(true)}>Share</button>
+      <button className="button button-secondary" onClick={() => { setShareMessage(''); setShareUrl(''); setShareOpen(true) }}>Share</button>
       <button className="button button-quiet" onClick={() => setConfirm('reset')}>Reset progress</button>
       <button className="button button-primary" onClick={() => setConfirm('replace')}>New card</button>
     </div>
@@ -211,15 +234,18 @@ export function PlayPage() {
     {shareOpen && <div className="dialog-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) setShareOpen(false) }}>
       <section className="dialog-card" role="dialog" aria-modal="true" aria-labelledby="share-title" onKeyDown={(event) => { if (event.key === 'Escape') setShareOpen(false) }}>
         <div className="picker-heading"><h2 id="share-title">Share this card</h2><button className="icon-button" aria-label="Close share dialog" onClick={() => setShareOpen(false)}>×</button></div>
-        {activeCard.kind === 'random'
-          ? <>
-            <p>The link creates a new card with the same tasks. Your progress is saved on this device.</p>
-            <label className="field-label" htmlFor="share-url">Share link</label>
-            <input ref={shareInput} id="share-url" readOnly value={createShareUrl(activeCard.card)} onFocus={(event) => event.currentTarget.select()} />
-            <button className="button button-primary button-wide" onClick={copyShareUrl}>Copy link</button>
-            {shareMessage && <p className="inline-note" role="status">{shareMessage}</p>}
-          </>
-          : <p>Custom card sharing is not available. This card is saved on this device.</p>}
+        <p>{activeCard.kind === 'random'
+          ? 'The link opens a new card with the same tasks. Progress stays on this device.'
+          : 'Create a shared snapshot of this card. Recipients start with no progress.'}</p>
+        {activeCard.kind === 'custom' && !shareUrl && <button className="button button-primary button-wide" disabled={shareBusy} onClick={() => void createCustomShareUrl()}>
+          {shareBusy ? 'Creating link…' : 'Create share link'}
+        </button>}
+        {(activeCard.kind === 'random' || shareUrl) && <>
+          <label className="field-label" htmlFor="share-url">Share link</label>
+          <input ref={shareInput} id="share-url" readOnly value={activeCard.kind === 'random' ? createShareUrl(activeCard.card) : shareUrl} onFocus={(event) => event.currentTarget.select()} />
+          <button className="button button-primary button-wide" onClick={copyShareUrl}>Copy link</button>
+        </>}
+        {shareMessage && <p className="inline-note" role="status">{shareMessage}</p>}
       </section>
     </div>}
 

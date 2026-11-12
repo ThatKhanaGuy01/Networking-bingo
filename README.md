@@ -1,13 +1,13 @@
 # Networking Bingo
 
-A mobile-first networking game scaffold. The app is a React/Vite SPA and a Hono API running as one Cloudflare Worker, with one Cloudflare D1 SQLite database. It uses the official Cloudflare Vite plugin for local Worker development and deployment.
+A mobile-first networking bingo app built as one React/Vite frontend and one Hono Worker API, backed by Cloudflare D1 and Drizzle ORM.
 
 ## Stack
 
 - React, TypeScript, Vite, Tailwind CSS, React Router, and `vite-plugin-pwa`
-- Hono on Cloudflare Workers
-- Cloudflare D1 with Drizzle ORM and checked-in SQL migrations
-- Vitest for Worker and game-logic tests; Playwright for browser route checks
+- Hono on Cloudflare Workers through the official Cloudflare Vite plugin
+- Cloudflare D1 (SQLite) with Drizzle ORM and checked-in migrations
+- Vitest and Playwright
 
 ## Local setup
 
@@ -15,31 +15,36 @@ Use a current Node.js release supported by Vite and Wrangler.
 
 ```sh
 npm install
+npm run db:migrate:local
 npm run dev
 ```
 
-Vite runs the Worker locally with the Cloudflare Vite plugin. The worker health endpoints are `/health` and `/api/health`. D1 is available through the local Wrangler binding; local migrations run with:
+Open `http://localhost:5173`. The local migration seeds the existing 80 sample prompts and uses the `bingotasks` D1 binding. `/health` is the Worker health endpoint. Add tasks at `/admin` if you need more for a larger board.
+
+### Local admin secrets
+
+Create `.dev.vars` once, with a password hash and a separate session-signing secret:
 
 ```sh
-npm run db:migrate:local
+umask 077
+touch .dev.vars
+chmod 600 .dev.vars
+npm run auth:hash-password >> .dev.vars
+printf 'SESSION_SECRET=%s\n' "$(openssl rand -base64 48)" >> .dev.vars
 ```
 
-## D1 and deployment
+The password command prompts twice without echoing input and emits `ADMIN_PASSWORD_HASH` using PBKDF2-HMAC-SHA-256 (600,000 iterations, 16-byte random salt, 256-bit result). Enter that password on `/admin`. Do not commit `.dev.vars`.
 
-Create the single D1 database, then copy the returned ID into `wrangler.jsonc`:
+## Database and deployment
 
-```sh
-npx wrangler d1 create networking-bingo
-```
-
-Apply migrations and deploy the one Worker:
+The repository already points at the existing D1 database. Do not create another database or replace its ID. Local migrations use Wrangler's local D1 and do not touch the remote database. Apply remote migrations explicitly before deploying; deployment does not apply migrations automatically.
 
 ```sh
+npx wrangler secret put ADMIN_PASSWORD_HASH
+npx wrangler secret put SESSION_SECRET
 npm run db:migrate:remote
 npm run deploy
 ```
-
-`npm run deploy` builds the frontend and Worker before calling Wrangler. Cloudflare serves frontend assets and sends `/api/*` plus `/health` to the Worker. SPA fallback supports direct navigation and reloads at `/admin`, `/play`, and `/c/:id`; unknown API routes remain JSON 404s.
 
 ## Checks
 
@@ -50,20 +55,17 @@ npm run test:e2e
 npm run build
 ```
 
-## Current application scope
+## Current functionality
 
-The current stage provides a playable, device-local bingo experience. `/random` creates reproducible boards from a replaceable mock task source, `/create` builds a custom board, and `/play` tracks progress with line and full-card celebrations. The active board and progress are stored in browser localStorage. Share links for random boards carry their size and seed; custom-card server sharing is not implemented yet. At least 80 varied sample prompts are available in `src/data/mockTasks.ts`.
+`/random` creates deterministic seeded cards from the public D1 task pool. `/create` builds a custom card. `/play` stores progress in localStorage and celebrates completed lines and full cards. `/admin` supports password login and task search, add, edit, and delete. `/c/:id` reads an immutable task-text snapshot from D1 and opens an unmarked copy; player progress is never stored on the server.
 
-The `/admin` route and `/c/:id` shared-card route remain placeholders. D1 migrations and Worker wiring are scaffolded, but the current game reads its task pool from the mock provider and does not persist cards to D1. Admin authentication, task CRUD, API validation/rate limiting, and server-side immutable custom-card snapshots are reserved for a later stage.
+## Architecture
 
-## Architecture boundaries
+- `src/game/`: pure deterministic game rules; no UI, storage, network, Worker, or database imports.
+- `src/persistence/`: browser-only localStorage and active-card records.
+- `src/api/`: browser HTTP client; does not use localStorage or direct DB imports.
+- `shared/`: serializable types shared by browser and Worker code.
+- `src/worker/`: Hono API, validation, authentication, rate limiting, and orchestration.
+- `src/worker/db/`: Drizzle schema and D1 access; never imported by browser code.
 
-- `src/game/` contains deterministic game rules only. It has no UI, storage, network, Hono, or database imports.
-- `src/persistence/` contains browser storage only. It owns the one-active-card rule and versioned localStorage record; it does not call the API or import server modules.
-- `src/data/` provides the task source. The current mock provider can later be replaced with an API-backed source without changing the engine.
-- `src/api/` contains browser API calls. UI routes use this client rather than calling `fetch` directly.
-- `shared/` contains serializable types shared across browser and Worker code.
-- `src/worker/` contains Hono routing, request validation, session/rate-limit middleware, and API orchestration.
-- `src/worker/db/` contains Drizzle schema, D1 access, and persistence queries. Browser code must never import it.
-
-See [AGENTS.md](./AGENTS.md) for project constraints and security requirements.
+See [AGENTS.md](./AGENTS.md) for project requirements and security boundaries.

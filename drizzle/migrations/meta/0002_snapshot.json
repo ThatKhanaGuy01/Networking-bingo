@@ -1,0 +1,206 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "5eda6ff0-c532-473b-b41c-06ada403030b",
+  "prevId": "f90991b9-b779-4c70-b2e8-7472855634b3",
+  "tables": {
+    "admin_rate_limits": {
+      "name": "admin_rate_limits",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reset_at": {
+          "name": "reset_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "admin_rate_limits_count_positive": {
+          "name": "admin_rate_limits_count_positive",
+          "value": "\"admin_rate_limits\".\"count\" > 0"
+        },
+        "admin_rate_limits_reset_positive": {
+          "name": "admin_rate_limits_reset_positive",
+          "value": "\"admin_rate_limits\".\"reset_at\" > 0"
+        }
+      }
+    },
+    "admin_sessions": {
+      "name": "admin_sessions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "admin_sessions_expiry_positive": {
+          "name": "admin_sessions_expiry_positive",
+          "value": "\"admin_sessions\".\"expires_at\" > 0"
+        }
+      }
+    },
+    "shared_cards": {
+      "name": "shared_cards",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "grid_size": {
+          "name": "grid_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "free_center": {
+          "name": "free_center",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "snapshot_json": {
+          "name": "snapshot_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "shared_cards_grid_size_valid": {
+          "name": "shared_cards_grid_size_valid",
+          "value": "\"shared_cards\".\"grid_size\" BETWEEN 3 AND 7"
+        },
+        "shared_cards_free_center_odd": {
+          "name": "shared_cards_free_center_odd",
+          "value": "\"shared_cards\".\"free_center\" = 0 OR \"shared_cards\".\"grid_size\" IN (3, 5, 7)"
+        },
+        "shared_cards_title_nonempty": {
+          "name": "shared_cards_title_nonempty",
+          "value": "length(trim(\"shared_cards\".\"title\")) > 0"
+        }
+      }
+    },
+    "tasks": {
+      "name": "tasks",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "text_key": {
+          "name": "text_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "tasks_text_key_unique": {
+          "name": "tasks_text_key_unique",
+          "columns": [
+            "text_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "tasks_text_nonempty": {
+          "name": "tasks_text_nonempty",
+          "value": "length(trim(\"tasks\".\"text\")) > 0"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

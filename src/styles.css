@@ -33,7 +33,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .app-shell { width: min(100%, 1120px); min-height: 100vh; margin: 0 auto; padding: 18px 22px 20px; display: flex; flex-direction: column; }
 .site-header { display: flex; align-items: center; justify-content: space-between; min-height: 48px; }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; color: #20233f; font-size: 1rem; font-weight: 850; letter-spacing: -.035em; text-decoration: none; }
-.wordmark-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 12px; background: #ffd25f; color: #20233f; font-size: 1.35rem; }
 .header-note { color: #5e6073; font-size: .86rem; }
 .site-footer { margin-top: auto; padding-top: 30px; color: #77788a; text-align: center; font-size: .78rem; }
 .storage-notice, .inline-note, .inline-error { margin: 14px 0; border-radius: 14px; padding: 12px 15px; }
@@ -42,18 +41,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .inline-error p { margin: 0 0 5px; }
 .inline-error p:last-child { margin-bottom: 0; }
 
-.home-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(220px, .8fr); align-items: center; gap: 18px; min-height: 400px; padding: 30px 2px 35px; }
+.home-hero { padding: 30px 2px 35px; }
 .hero-copy { position: relative; z-index: 1; }
 .eyebrow { margin: 0 0 9px; color: #315ed7; font-size: .78rem; font-weight: 850; letter-spacing: .045em; text-transform: uppercase; }
 .home-hero h1 { max-width: 650px; margin: 0; color: #20233f; font-size: clamp(3.2rem, 8vw, 6.2rem); line-height: .94; font-weight: 950; letter-spacing: -.075em; }
 .hero-description { max-width: 430px; margin: 24px 0 25px; color: #56596d; font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.55; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.hero-art { position: relative; display: grid; min-height: 315px; place-items: center; }
-.mini-card { display: grid; width: min(100%, 275px); aspect-ratio: 1; grid-template-columns: repeat(2, 1fr); gap: 9px; padding: 14px; transform: rotate(5deg); border: 2px solid #20233f; border-radius: 25px; background: white; box-shadow: 8px 9px 0 #20233f; }
-.mini-tile { display: grid; place-content: center; border: 2px solid #20233f; border-radius: 17px; color: #20233f; text-align: center; font-size: clamp(.72rem, 1.6vw, .92rem); line-height: 1.1; font-style: normal; font-weight: 900; transform: rotate(-2deg); }
-.tile-yellow { background: #ffd25f; }.tile-blue { background: #6ab7ff; }.tile-coral { background: #ff725e; }.tile-mint { background: #5ad7b5; }
-.art-spark { position: absolute; z-index: 1; color: #315ed7; font-size: 2.2rem; }
-.spark-one { top: 7%; right: 4%; transform: rotate(12deg); }.spark-two { bottom: 6%; left: 5%; color: #ff725e; }
 
 .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 10px; border: 2px solid transparent; border-radius: 15px; padding: 10px 18px; color: #20233f; font-size: .95rem; font-weight: 850; text-decoration: none; cursor: pointer; transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
 .button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 0 rgb(32 35 63 / .15); }
@@ -165,6 +158,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .picker-heading h2 { font-size: 1.35rem; }
 .icon-button { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid #cfced8; border-radius: 13px; color: #20233f; background: white; font-size: 1.6rem; cursor: pointer; }
 .task-details .eyebrow { margin-top: 4px; }.task-details h2 { margin: 8px 0 22px; font-size: 1.75rem; line-height: 1.2; }
+.admin-page { max-width: 850px; margin: 0 auto; }
+.admin-page .page-heading { margin-bottom: 20px; }
+.admin-page .page-heading h1, .shared-card-page h1 { margin: 0; font-size: clamp(2.2rem, 6vw, 3.2rem); line-height: 1.05; letter-spacing: -.055em; }
+.admin-login { max-width: 480px; }
+.admin-login h2 { margin: 0; font-size: 1.3rem; }
+.admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0 14px; }
+.admin-toolbar h2 { margin: 0; font-size: 1.4rem; }.admin-toolbar h2 span { color: #696a7b; font-size: .9rem; font-weight: 600; }
+.admin-add-form { border: 2px solid #20233f; border-radius: 18px; padding: 18px; background: white; box-shadow: 3px 3px 0 #20233f; }
+.admin-add-form .field-label { margin-top: 0; }
+.admin-add-form textarea, .admin-task-edit textarea { width: 100%; min-height: 82px; resize: vertical; border: 2px solid #d6d6df; border-radius: 12px; padding: 11px 13px; color: #20233f; background: #fffefa; }
+.admin-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; color: #696a7b; font-size: .8rem; }
+.admin-search { display: block; max-width: 520px; margin: 22px 0 12px; font-size: .86rem; font-weight: 850; }
+.admin-search input { display: block; width: 100%; min-height: 46px; margin-top: 6px; border: 2px solid #d6d6df; border-radius: 12px; padding: 9px 12px; color: #20233f; background: #fffefa; }
+.admin-task-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid #dedde4; }
+.admin-task-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid #dedde4; padding: 13px 4px; }
+.admin-task-text { min-width: 0; overflow-wrap: anywhere; line-height: 1.4; }
+.admin-task-actions { display: flex; flex: 0 0 auto; gap: 7px; }
+.admin-task-edit { width: 100%; }
+.admin-task-edit textarea { margin-bottom: 9px; }
+.admin-empty { padding: 22px 4px; color: #696a7b; }
+.shared-card-page { max-width: 760px; margin: 30px auto; }
+.shared-card-page > p { color: #5e6073; }
+.shared-task-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 7px 24px; margin: 20px 0; padding-left: 24px; }
+.shared-task-list li { padding: 4px 0; line-height: 1.4; }
 .search-label { display: block; margin-top: 18px; font-size: .82rem; font-weight: 850; }
 .search-label input { display: block; margin-top: 7px; }
 .task-options { display: grid; gap: 7px; max-height: min(42vh, 380px); overflow: auto; margin: 14px -4px 0; padding: 4px; list-style: none; }
@@ -179,11 +196,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 760px) {
   .app-shell { padding: 12px 16px 18px; }
   .header-note { display: none; }
-  .home-hero { grid-template-columns: 1fr; gap: 0; min-height: auto; padding-top: 34px; }
-  .hero-art { min-height: 200px; margin-top: 10px; }
-  .mini-card { width: 185px; padding: 10px; gap: 6px; border-radius: 19px; box-shadow: 6px 6px 0 #20233f; }
-  .mini-tile { border-radius: 12px; font-size: .68rem; }
-  .spark-one { right: 14%; top: 0; }.spark-two { left: 13%; bottom: 0; }
+  .home-hero { padding-top: 34px; }
   .resume-panel { grid-template-columns: 42px 1fr; gap: 10px; padding: 13px; }
   .resume-mark { width: 40px; height: 40px; border-radius: 13px; }
   .resume-actions { grid-column: 1 / -1; justify-content: space-between; }
@@ -203,6 +216,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .dialog-actions { justify-content: stretch; }
   .dialog-actions .button { flex: 1; }
   .task-options { max-height: 44vh; }
+  .admin-task-row { align-items: flex-start; flex-direction: column; gap: 9px; }
+  .admin-task-actions { align-self: flex-end; }
+  .admin-form-footer { align-items: flex-end; }
 }
 
 @media (max-width: 400px) {

@@ -1,3 +1,5 @@
-# Copy to .dev.vars for local Worker secrets. Authentication is added in a later step.
-ADMIN_PASSWORD=replace-with-a-long-random-password
-SESSION_SECRET=replace-with-at-least-32-random-bytes
+# Copy to .dev.vars for local Worker secrets. Generate these values with:
+#   npm run auth:hash-password
+#   openssl rand -base64 48
+ADMIN_PASSWORD_HASH=replace-with-output-from-auth-hash-command
+SESSION_SECRET=replace-with-output-from-openssl-rand

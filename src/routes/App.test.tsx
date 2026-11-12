@@ -193,7 +193,7 @@ describe('custom card builder', () => {
     expect(screen.getByText('8 squares left')).toBeInTheDocument()
   })
 
-  it('builds and plays a complete custom card', async () => {
+  it('builds, plays and shares a complete custom card', async () => {
     const user = userEvent.setup()
     renderApp('/create')
     await screen.findByRole('heading', { name: 'Build your own' })
@@ -206,8 +206,10 @@ describe('custom card builder', () => {
     await screen.findByRole('heading', { name: 'Bingo card' })
     expect(loadActiveCard().activeCard?.kind).toBe('custom')
     expect(loadActiveCard().activeCard?.card.seed).toBeNull()
+    vi.stubGlobal('fetch', vi.fn(async () => Response.json({ id: 'share-id' }, { status: 201 })))
     await user.click(screen.getByRole('button', { name: 'Share' }))
-    expect(screen.getByText(/Custom card sharing is not available/)).toBeInTheDocument()
+    await user.click(await screen.findByRole('button', { name: 'Create share link' }))
+    expect(await screen.findByLabelText('Share link')).toHaveValue('http://localhost:3000/c/share-id')
   })
 })
 

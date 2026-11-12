@@ -1,18 +1,22 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "networking-bingo",
-  "main": "src/worker/index.ts",
-  "compatibility_date": "2026-11-12",
-  "assets": {
-    "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api", "/api/*", "/health"]
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "networking-bingo",
-      "database_id": "REPLACE_AFTER_WRANGLER_D1_CREATE",
-      "migrations_dir": "drizzle/migrations"
-    }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "networking-bingo",
+	"main": "src/worker/index.ts",
+	"compatibility_date": "2026-11-12",
+	"assets": {
+		"not_found_handling": "single-page-application",
+		"run_worker_first": [
+			"/api",
+			"/api/*",
+			"/health"
+		]
+	},
+	"d1_databases": [
+		{
+			"binding": "bingotasks",
+			"database_name": "networking-bingo-db",
+			"database_id": "c1753534-13e7-4f1c-a429-ff7d37d565cd",
+      "migrations_dir": "drizzle/migrations",
+		}
+	]
 }

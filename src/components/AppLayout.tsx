@@ -6,7 +6,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return <div className="app-shell">
     <header className="site-header">
       <Link to="/" className="wordmark" aria-label="Networking Bingo home">
-        <span className="wordmark-mark" aria-hidden="true">✳</span>
         <span>Networking Bingo</span>
       </Link>
     </header>

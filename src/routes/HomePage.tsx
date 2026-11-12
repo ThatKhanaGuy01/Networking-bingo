@@ -20,15 +20,6 @@ export function HomePage() {
           <Link to="/create" className="button button-secondary">Build your own</Link>
         </div>
       </div>
-      <div className="hero-art" aria-hidden="true">
-        <span className="art-spark spark-one">✦</span><span className="art-spark spark-two">✳</span>
-        <div className="mini-card">
-          <i className="mini-tile tile-yellow" />
-          <i className="mini-tile tile-blue" />
-          <i className="mini-tile tile-coral" />
-          <i className="mini-tile tile-mint" />
-        </div>
-      </div>
     </section>
 
     {activeCard && <section className="resume-panel" aria-label="Saved game">

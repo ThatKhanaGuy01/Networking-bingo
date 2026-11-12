@@ -10,5 +10,15 @@ export interface CardSnapshot {
   title: string
   gridSize: GridSize
   freeCenter: boolean
-  tasks: BingoTask[]
+  cells: Array<{
+    index: number
+    row: number
+    column: number
+    task: BingoTask | null
+    isFree: boolean
+  }>
+}
+
+export interface SharedCardResponse extends CardSnapshot {
+  completedCells: boolean[]
 }
